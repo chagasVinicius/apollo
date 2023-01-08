@@ -7,6 +7,7 @@ import (
 
 	"github.com/chagasVinicius/apollo/web"
 	"github.com/julienschmidt/httprouter"
+	"github.com/zmb3/spotify/v2"
 )
 
 func AddCategory(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -22,7 +23,13 @@ func AddCategory(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	playlists := web.CategoryPlaylists(category)
 
-	jsonStr, err := json.Marshal(newCategories)
+	playlistID := spotify.ID(playlists.Playlists.Playlists[0].ID)
+
+	playlistsItems := web.GetPlaylistItems(playlistID)
+
+	item := playlistsItems.Items[0]
+
+	jsonStr, err := json.Marshal(item)
 
 	fmt.Fprintln(rw, "Categories: ", string(jsonStr))
 }

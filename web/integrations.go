@@ -35,7 +35,7 @@ func Load() {
 
 func CategoryPlaylists(category string) *spotify.SearchResult {
 	ctx := context.Background()
-	results, err := spotifyClient.Search(ctx, category, spotify.SearchTypePlaylist|spotify.SearchTypeAlbum)
+	results, err := spotifyClient.Search(ctx, category, spotify.SearchTypePlaylist)
 
 	if err != nil {
 		log.Fatal(err)
