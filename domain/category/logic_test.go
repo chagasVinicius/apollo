@@ -1,6 +1,8 @@
 package category
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	"reflect"
 	"testing"
 
@@ -104,5 +106,17 @@ func TestCreateCategory(t *testing.T) {
 
 	if !reflect.DeepEqual(newCategory.PlaylistsID, categoryPlaylistsID) {
 	 	t.Errorf("got %q, wanted %q", categoryPlaylistsID, newCategory.PlaylistsID)
+	}
+}
+
+func TestPlaylistPath(t *testing.T) {
+	categoryID := uuid.New()
+	playlistID := "d2814209-3c95-4e4e-99f4-0ed7b915ec1e"
+	expectedPath := fmt.Sprintf("/persistent/category/%s/d2814209-3c95-4e4e-99f4-0ed7b915ec1e.json", categoryID.String())
+
+	path := PlaylistPath(categoryID, playlistID)
+
+	if !reflect.DeepEqual(expectedPath, path) {
+	 	t.Errorf("got %q, wanted %q", expectedPath, path)
 	}
 }

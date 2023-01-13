@@ -21,7 +21,7 @@ func main() {
 	router.GET("/hello/:name", handlers.Hello)
 
 	//Post
-	router.POST("/categories/new", handlers.AddCategory)
+	router.POST("/categories/:name", handlers.AddCategory)
 
 
 	fmt.Println("Starting server on :8080 - Test")

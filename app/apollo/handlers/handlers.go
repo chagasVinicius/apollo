@@ -10,29 +10,57 @@ import (
 	"github.com/zmb3/spotify/v2"
 )
 
-func AddCategory(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var newCategories map[string][]string
-	decoder := json.NewDecoder(r.Body)
+func Respond(w http.ResponseWriter, data any, statusCode int) error {
 
-	err := decoder.Decode(&newCategories)
-	if err != nil {
-		panic(err)
+	if statusCode == http.StatusNoContent {
+		w.WriteHeader(statusCode)
+		return nil
 	}
 
-	category := newCategories["categories"][0]
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
 
-	playlists := web.CategoryPlaylists(category)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
 
-	playlistID := spotify.ID(playlists.Playlists.Playlists[0].ID)
+	if _, err := w.Write(jsonData); err != nil {
+		return err
+	}
 
-	playlistsItems := web.GetPlaylistItems(playlistID)
-
-	item := playlistsItems.Items[0]
-
-	jsonStr, err := json.Marshal(item)
-
-	fmt.Fprintln(rw, "Categories: ", string(jsonStr))
+	return nil
 }
+
+func AddCategory(rw http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	categoryName := ps.ByName("name")
+	playlists := web.CategoryPlaylists(categoryName)
+}
+
+//Example with body
+// func AddCategory(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// 	var newCategories map[string][]string
+// 	decoder := json.NewDecoder(r.Body)
+
+// 	err := decoder.Decode(&newCategories)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	category := newCategories["categories"][0]
+
+// 	playlists := web.CategoryPlaylists(category)
+
+// 	playlistID := spotify.ID(playlists.Playlists.Playlists[0].ID)
+
+// 	playlistsItems := web.GetPlaylistItems(playlistID)
+
+// 	item := playlistsItems.Items[0]
+
+// 	jsonStr, err := json.Marshal(item)
+
+// 	fmt.Fprintln(rw, "Categories: ", string(jsonStr))
+// }
 
 
 func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

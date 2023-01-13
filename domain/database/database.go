@@ -3,6 +3,7 @@ package database
 import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"github.com/chagasVinicius/domain/category"
 )
 
 var (
@@ -11,27 +12,14 @@ var (
 
 func Load() {
 	database, _ = gorm.Open(sqlite.Open("./domain/database/database.db"), &gorm.Config{})
-	database.AutoMigrate(&Category{})
-	database.AutoMigrate(&Playlists{})
+	database.AutoMigrate(&category.Category{})
+	database.AutoMigrate(&category.Playlists{})
 }
 
-type Category struct {
-	gorm.Model
-	ID string
-	Name string
-	PlaylistsID []string
-}
-
-type Playlists struct {
-	gorm.Model
-	ID string
-	PlaylistItems string // filepath for now
-}
-
-func CreateCategory(category Category) {
+func CreateCategory(category category.Category) {
 	database.Create(category)
 }
 
-func UpdateCategory(category Category) {
+func UpdateCategory(category category.Category) {
 	database.Save(category)
 }
