@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+  cora-email:
+    build:
+      context: .
+      args:
+        BUILD_REF: dev
+    environment:
+      BUREAU_GATEWAY_DB_HOST: "db:5432"
+      BUREAU_GATEWAY_TRACE_REPORTER_URI: "http://zipkin:9411/api/v2/spans"
+    ports:
+      - 3000:3000
+      - 4000:4000
+    depends_on:
+      - db
+      - zipkin
+
+  zipkin:
+    image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}
+    container_name: zipkin
+    environment:
+      - STORAGE_TYPE=mem
+      # Point the zipkin at the storage backend
+      - MYSQL_HOST=mysql
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to increase heap size
+      # - JAVA_OPTS=-Xms128m -Xmx128m -XX:+ExitOnOutOfMemoryError
+    ports:
+      - 9411:9411

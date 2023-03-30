@@ -1,10 +1,13 @@
-# appolo
+# apollo
 
-## Objetivo Geral
-- Classificar uma música dentro de um grupo funcional (treino, relaxar, anime)
+Projeto base para serviços em GO.
 
-## Objetivos especificos
-- Pesquisar as maiores playlists dos grupos citados anteriormente
-- Verificar todos os metadados das playlists e musicas pesquisadas
-- Gerar um modelo de classificação com os metadados armazenados
-- Integrar modelo com API do apollo
+# Features
+
+- [x] Suporte ao postgres usando o [Bun](https://bun.uptrace.dev/)
+- [x] Suporte a migrations
+- [x] Observabilidade (logs, traces e metricas)
+- [x] Executáveis separados (api, consumer, job)
+- [ ] Script de init (renomeia as coisas para o nome do repo novo)
+- [ ] Outbox (c/ [Debezium](https://debezium.io))
+- [ ] Inbox
