@@ -40,7 +40,7 @@ check.go:
 
 check.docker:
 	docker version >/dev/null 2>&1 || (echo "ERROR: docker is not installed" && exit 1)
-	docker-compose version >/dev/null 2>&1 || (echo "ERROR: docker-compose is not installed" && exit 1)
+	docker compose version >/dev/null 2>&1 || (echo "ERROR: docker-compose is not installed" && exit 1)
 
 ## Install go tools
 setup: check.go check.docker
