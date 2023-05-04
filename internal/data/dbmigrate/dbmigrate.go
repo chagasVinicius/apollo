@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/chagasVinicius/apollo/internal/sys/database"
+
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 )
@@ -14,7 +15,7 @@ import (
 // Migrations is a list of database Migrations.
 var Migrations = migrate.NewMigrations()
 
-//go:embed sql/*.sql
+//go:embed sql
 var sqlMigrations embed.FS
 
 func init() {

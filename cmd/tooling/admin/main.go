@@ -42,7 +42,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "GO_STARTER"
+	const prefix = "APOLLO"
 
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
@@ -73,7 +73,7 @@ func processCommands(cfg config) error {
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
 	}
-
+	fmt.Println(dbConfig)
 	switch cfg.Args.Num(0) {
 	case "migrate":
 		if err := commands.Migrate(dbConfig); err != nil {
