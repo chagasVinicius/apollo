@@ -73,7 +73,6 @@ func processCommands(cfg config) error {
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
 	}
-	fmt.Println(dbConfig)
 	switch cfg.Args.Num(0) {
 	case "migrate":
 		if err := commands.Migrate(dbConfig); err != nil {
