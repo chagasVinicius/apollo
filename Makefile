@@ -50,6 +50,8 @@ setup: check.go check.docker
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
 	docker pull postgres:15-alpine
 
+run-migrations: docker exec "$(docker ps -aqf "name=apollo-api")" ./admin migrate
+
 # ==============================================================================
 # GO
 

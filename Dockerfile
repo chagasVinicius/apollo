@@ -24,7 +24,7 @@ RUN addgroup -g 1000 -S appuser && \
     adduser -u 1000 -h /service -G appuser -S appuser
 COPY --from=build_apollo-api --chown=appuser:appuser /service/cmd/services/apollo-api/apollo-api /service/apollo-api
 COPY --from=build_apollo-api --chown=appuser:appuser /service/cmd/tooling/admin/admin /service/admin
-COPY --from=build_apollo-api --chown=appuser:appuser /service/entrypoint.sh /service/entrypoint.sh
+
 WORKDIR /service
 USER appuser
 CMD ["./apollo-api"]

@@ -36,7 +36,6 @@ services:
     depends_on:
       - db
       - zipkin
-    command: ["./admin", "migrate"]
     network_mode: host
 
   zipkin:
