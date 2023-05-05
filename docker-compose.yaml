@@ -8,6 +8,11 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   adminer:
     image: adminer
@@ -17,11 +22,11 @@ services:
     depends_on:
       - db
 
-  cora-email:
+  apollo-api:
     build:
       context: .
       args:
-        BUILD_REF: dev
+        BUILD_REF: develop
     environment:
       BUREAU_GATEWAY_DB_HOST: "db:5432"
       BUREAU_GATEWAY_TRACE_REPORTER_URI: "http://zipkin:9411/api/v2/spans"
@@ -31,6 +36,7 @@ services:
     depends_on:
       - db
       - zipkin
+    network_mode: host
 
   zipkin:
     image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}

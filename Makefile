@@ -34,13 +34,14 @@ help:
 GOLANGCI_LINT_VERSION=v1.51.1
 GOBIN := $(shell go version)
 GOPATH := $(shell go env GOPATH)
+APOLLO_CONTAINER := $(shell docker ps -aqf "name=apollo-api")
 
 check.go:
 	go version >/dev/null 2>&1 || (echo "ERROR: go is not installed" && exit 1)
 
 check.docker:
 	docker version >/dev/null 2>&1 || (echo "ERROR: docker is not installed" && exit 1)
-	docker-compose version >/dev/null 2>&1 || (echo "ERROR: docker-compose is not installed" && exit 1)
+	docker compose version >/dev/null 2>&1 || (echo "ERROR: docker-compose is not installed" && exit 1)
 
 ## Install go tools
 setup: check.go check.docker
@@ -49,6 +50,9 @@ setup: check.go check.docker
 	go install mvdan.cc/gofumpt@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
 	docker pull postgres:15-alpine
+
+run-migrations:
+	docker exec	${APOLLO_CONTAINER} ./admin "migrate"
 
 # ==============================================================================
 # GO

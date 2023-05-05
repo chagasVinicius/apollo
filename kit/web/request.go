@@ -2,6 +2,7 @@ package web
 
 import (
 	"net/http"
+	"fmt"
 
 	"github.com/dimfeld/httptreemux/v5"
 )
@@ -14,6 +15,14 @@ type validator interface {
 func Param(r *http.Request, key string) string {
 	m := httptreemux.ContextParams(r.Context())
 	return m[key]
+}
+
+// Query returns the query string value for the provided key.
+func Query(r *http.Request, key string, fallback interface{}) string {
+	if v := r.URL.Query().Get(key); len(v) > 0 {
+		return v
+	}
+	return fmt.Sprint(fallback)
 }
 
 // Decode reads the body of an HTTP request looking for a JSON document. The

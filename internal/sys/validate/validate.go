@@ -2,6 +2,7 @@
 package validate
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
+	"github.com/google/uuid"
 )
 
 // validate holds the settings and caches for validating request struct values.
@@ -61,5 +63,12 @@ func Check(val any) error {
 		return fields
 	}
 
+	return nil
+}
+
+func CheckID(id string) error {
+	if _, err := uuid.Parse(id); err != nil {
+		return errors.New("ID is not in its proper form")
+	}
 	return nil
 }

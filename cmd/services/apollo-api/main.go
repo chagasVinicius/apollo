@@ -59,8 +59,8 @@ func run(log *zap.SugaredLogger) error {
 			WriteTimeout    time.Duration `conf:"default:10s"`
 			IdleTimeout     time.Duration `conf:"default:120s"`
 			ShutdownTimeout time.Duration `conf:"default:20s"`
-			APIHost         string        `conf:"default:0.0.0.0:3000"`
-			DebugHost       string        `conf:"default:0.0.0.0:4000"`
+			APIHost         string        `conf:"default:localhost:3000"`
+			DebugHost       string        `conf:"default:localhost:4000"`
 		}
 		DB struct {
 			User       string `conf:"default:postgres"`
@@ -81,7 +81,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "GO_STARTER"
+	const prefix = "APOLLO"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
@@ -115,6 +115,7 @@ func run(log *zap.SugaredLogger) error {
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
 	})
+
 	if err != nil {
 		return fmt.Errorf("connecting to db: %w", err)
 	}
