@@ -30,12 +30,12 @@ func (h Handlers) Create(ctx context.Context, w http.ResponseWriter, r *http.Req
 		return fmt.Errorf("unable to decode payload: %w", err)
 	}
 
-	b, err := h.Category.Create(ctx, nc)
+	c, err := h.Category.Create(ctx, nc)
 	if err != nil {
 		return fmt.Errorf("creating new category, nb[%+v]: %w", nc, err)
 	}
 
-	return web.Respond(ctx, w, b, http.StatusCreated)
+	return web.Respond(ctx, w, c, http.StatusCreated)
 }
 
 // QueryByID returns a category by its ID.

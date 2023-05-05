@@ -4,6 +4,7 @@ package web
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"syscall"
@@ -82,6 +83,8 @@ func (a *App) Handle(method string, group string, path string, handler Handler, 
 		ctx = context.WithValue(ctx, key, &v)
 
 		if err := handler(ctx, w, r); err != nil {
+			fmt.Println("ERRO") //TODO log
+			fmt.Println(err)
 			if validateShutdown(err) {
 				a.SignalShutdown()
 				return
@@ -93,6 +96,7 @@ func (a *App) Handle(method string, group string, path string, handler Handler, 
 	if group != "" {
 		finalPath = "/" + group + path
 	}
+
 	a.mux.Handle(method, finalPath, h)
 }
 
