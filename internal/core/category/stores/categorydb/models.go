@@ -7,7 +7,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-// dbBeer represents an individual beer.
+// dbCategory represents an individual category.
 type dbCategory struct {
 	bun.BaseModel `bun:"table:categories,alias:c"`
 

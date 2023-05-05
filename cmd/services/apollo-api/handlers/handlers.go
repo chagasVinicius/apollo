@@ -26,7 +26,7 @@ func APIMux(cfg APIMuxConfig) http.Handler {
 	app := web.NewApp(
 		cfg.Shutdown,
 		cfg.Tracer,
-		//mid.Authenticate(), TODO
+
 		mid.Logger(cfg.Log),
 		mid.Errors(cfg.Log),
 		mid.Metrics(),

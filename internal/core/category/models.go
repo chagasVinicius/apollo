@@ -12,6 +12,6 @@ type Category struct {
 }
 
 type NewCategory struct {
-	Name      string `json:"name"`
-	ShortDesc string `json:"short_desc"`
+	Name      string `json:"name" validate:"required"`
+	ShortDesc string `json:"short_desc" validate:"required"`
 }

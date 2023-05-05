@@ -42,7 +42,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "APOLLO"
+	const prefix = "apollo-api"
 
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {

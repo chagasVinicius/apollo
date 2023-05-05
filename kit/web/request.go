@@ -1,8 +1,8 @@
 package web
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"github.com/dimfeld/httptreemux/v5"
 )

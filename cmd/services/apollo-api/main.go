@@ -81,7 +81,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "APOLLO"
+	const prefix = "apollo-api"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
@@ -115,7 +115,6 @@ func run(log *zap.SugaredLogger) error {
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
 	})
-
 	if err != nil {
 		return fmt.Errorf("connecting to db: %w", err)
 	}

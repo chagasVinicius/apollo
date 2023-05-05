@@ -27,12 +27,13 @@ type Handlers struct {
 func (h Handlers) Create(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var nc category.NewCategory
 	if err := web.Decode(r, &nc); err != nil {
-		return fmt.Errorf("unable to decode payload: %w", err)
+		err := fmt.Errorf("invalid json data")
+		return v1Web.NewRequestError(err, http.StatusBadRequest)
 	}
 
 	c, err := h.Category.Create(ctx, nc)
 	if err != nil {
-		return fmt.Errorf("creating new category, nb[%+v]: %w", nc, err)
+		return fmt.Errorf("creating new category, nc[%+v]: %w", nc, err)
 	}
 
 	return web.Respond(ctx, w, c, http.StatusCreated)
