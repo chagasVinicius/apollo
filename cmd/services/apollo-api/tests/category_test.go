@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bytes"
+
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,12 +12,14 @@ import (
 	"testing"
 
 	"github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers"
+	"github.com/chagasVinicius/apollo/internal/core/category"
 	"github.com/chagasVinicius/apollo/internal/data/dbtest"
 	"github.com/chagasVinicius/apollo/internal/sys/validate"
 	v1Web "github.com/chagasVinicius/apollo/internal/web/v1"
 	"github.com/chagasVinicius/apollo/kit/docker"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+
 )
 
 var c *docker.Container
@@ -57,8 +60,9 @@ func TestCategories(t *testing.T) {
 
 	t.Run("postCategories400EmptyJSON", tests.postCategories400EmptyJSON)
 	t.Run("postCategories400WrongJson", tests.postCategories400WrongJSON)
-	// t.Run("getCategories400", tests.getCategories400)
-	// t.Run("getCategories404", tests.getCategories404)
+	t.Run("getCategories400", tests.getCategories400)
+	t.Run("getCategories404", tests.getCategories404)
+	t.Run("category200Flow", tests.category200Flow)
 }
 
 // postCategories400 validates a category can't be created with the endpoint
@@ -154,49 +158,90 @@ func (ct *CategoryTests) postCategories400WrongJSON(t *testing.T) {
 }
 
 // getCategories400 validates a category request for a malformed id.
-// func (ct *CategoryTests) getCategories400(t *testing.T) {
-// 	id := "12345"
+func (ct *CategoryTests) getCategories400(t *testing.T) {
+	id := "12345"
 
-// 	r := httptest.NewRequest(http.MethodGet, "/v1/categories/"+id, nil)
-// 	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/v1/categories/"+id, nil)
+	w := httptest.NewRecorder()
 
-// 	ct.app.ServeHTTP(w, r)
+	ct.app.ServeHTTP(w, r)
 
-// 	t.Log("Given the need to validate getting a product with a malformed id.")
-// 	{
-// 		t.Logf("\t When using the new category %s.", id)
-// 		{
-// 			if w.Code != http.StatusBadRequest {
-// 				t.Fatalf("\t [ERROR] Should receive a status code of 400 for the response : %v", w.Code)
-// 			}
-// 			t.Log("\t [SUCCESS] Should receive a status code of 400 for the response.")
+	t.Log("Given the need to validate getting a product with a malformed id.")
+	{
+		t.Logf("\t When using the new category %s.", id)
+		{
+			if w.Code != http.StatusBadRequest {
+				t.Fatalf("\t [ERROR] Should receive a status code of 400 for the response : %v", w.Code)
+			}
+			t.Log("\t [SUCCESS] Should receive a status code of 400 for the response.")
 
-// 			got := w.Body.String()
-// 			exp := `{"error":"ID is not in its proper form"}`
-// 			if got != exp {
-// 				t.Fatalf("\t [ERROR] Should get the expected result.\n\t\t Got: %s.\n\t\t Exp: %s", got, exp)
-// 			}
-// 			t.Log("\t [SUCCESS] Should get the expected result.")
-// 		}
-// 	}
-// }
+			got := w.Body.String()
+			exp := `{"error":"ID is not in its proper form"}`
+			if got != exp {
+				t.Fatalf("\t [ERROR] Should get the expected result.\n\t\t Got: %s.\n\t\t Exp: %s", got, exp)
+			}
+			t.Log("\t [SUCCESS] Should get the expected result.")
+		}
+	}
+}
 
-// func (ct *CategoryTests) getCategories404(t *testing.T) {
-// 	id := "112262f1-1a77-4374-9f22-39e575aa6348"
+func (ct *CategoryTests) getCategories404(t *testing.T) {
+	id := "112262f1-1a77-4374-9f22-39e575aa6348"
 
-// 	r := httptest.NewRequest(http.MethodGet, "/v1/categories/"+id, nil)
-// 	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodGet, "/v1/categories/"+id, nil)
+	w := httptest.NewRecorder()
 
-// 	ct.app.ServeHTTP(w, r)
+	ct.app.ServeHTTP(w, r)
 
-// 	t.Log("Given the need to validate deleting a product that does not exist.")
-// 	{
-// 		t.Log("\t Given the need to validate getting a category with an unknown id.")
-// 		{
-// 			if w.Code != http.StatusNotFound {
-// 				t.Fatalf("\t [ERROR] Should receive a status code of 404 for the response : %v", w.Code)
-// 			}
-// 			t.Log("\t [SUCCESS] Should receive a status code of 404 for the response.")
-// 		}
-// 	}
-// }
+	t.Log("Given the need to validate deleting a product that does not exist.")
+	{
+		t.Log("\t Given the need to validate getting a category with an unknown id.")
+		{
+			if w.Code != http.StatusNotFound {
+				t.Fatalf("\t [ERROR] Should receive a status code of 404 for the response : %v", w.Code)
+			}
+			t.Log("\t [SUCCESS] Should receive a status code of 404 for the response.")
+		}
+	}
+}
+
+func (ct *CategoryTests) category200Flow(t *testing.T) {
+	t.Log("Given correct input should be able to create a category")
+	{
+		Body := map[string]interface{}{
+			"name": "category_name",
+			"short_desc": "short desc",
+		}
+		body, _ := json.Marshal(Body)
+		r := httptest.NewRequest(http.MethodPost, "/v1/categories", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+
+		ct.app.ServeHTTP(w, r)
+
+		if w.Code != http.StatusCreated {
+			t.Fatalf("\t [ERROR] Should receive a status code of 201 for the response: %v", w.Code)
+		}
+		t.Log("\t [SUCCESS] Should receive a status code of 201 for the response.")
+
+		got := w.Body.String()
+		c := category.Category{}
+ 		err := json.Unmarshal([]byte(got), &c)
+		if err != nil {
+			t.Fatalf("\t [ERROR] Should be created a Category entity: %v", err)
+		}
+		t.Log("\t [SUCCESS] Should be created a Category entity.")
+
+		id := c.ID
+		r2 := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/v1/categories/%v", id), nil)
+		w2 := httptest.NewRecorder()
+
+		ct.app.ServeHTTP(w2, r2)
+
+		if w2.Code != http.StatusOK {
+			t.Fatalf("\t [ERROR] Should receive a status code of 200 for the response: %v", w2.Code)
+		}
+		t.Log("\t [SUCCESS] Should receive a status code of 200")
+
+	}
+
+}
