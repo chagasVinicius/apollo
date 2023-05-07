@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
-	"github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers"
+	"github.com/chagasVinicius/apollo/app/services/apollo-api/handlers"
 	"github.com/chagasVinicius/apollo/internal/sys/database"
 	"github.com/chagasVinicius/apollo/internal/web/debug"
 	"github.com/chagasVinicius/apollo/kit/logger"

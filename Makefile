@@ -45,8 +45,8 @@ check.docker:
 
 ## Install go tools
 setup: check.go check.docker
-	go install golang.org/x/tools/cmd/goimports@latest
-	go install golang.org/x/vuln/cmd/govulncheck@latest
+	go install golang.org/x/tools/app/goimports@latest
+	go install golang.org/x/vuln/app/govulncheck@latest
 	go install mvdan.cc/gofumpt@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
 	docker pull postgres:15-alpine

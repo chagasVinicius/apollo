@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	v1 "github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers/v1"
+	v1 "github.com/chagasVinicius/apollo/app/services/apollo-api/handlers/v1"
 	"github.com/chagasVinicius/apollo/internal/web/v1/mid"
 	"github.com/chagasVinicius/apollo/kit/web"
 	"github.com/uptrace/bun"

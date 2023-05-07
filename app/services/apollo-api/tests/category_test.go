@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,8 +9,9 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers"
+	"github.com/chagasVinicius/apollo/app/services/apollo-api/handlers"
 	"github.com/chagasVinicius/apollo/internal/core/category"
 	"github.com/chagasVinicius/apollo/internal/data/dbtest"
 	"github.com/chagasVinicius/apollo/internal/sys/validate"
@@ -19,7 +19,6 @@ import (
 	"github.com/chagasVinicius/apollo/kit/docker"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
 )
 
 var c *docker.Container
@@ -206,10 +205,12 @@ func (ct *CategoryTests) getCategories404(t *testing.T) {
 }
 
 func (ct *CategoryTests) category200Flow(t *testing.T) {
+	var got string
+	var err any
 	t.Log("Given correct input should be able to create a category")
 	{
 		Body := map[string]interface{}{
-			"name": "category_name",
+			"name":       "category_name",
 			"short_desc": "short desc",
 		}
 		body, _ := json.Marshal(Body)
@@ -223,15 +224,15 @@ func (ct *CategoryTests) category200Flow(t *testing.T) {
 		}
 		t.Log("\t [SUCCESS] Should receive a status code of 201 for the response.")
 
-		got := w.Body.String()
-		c := category.Category{}
- 		err := json.Unmarshal([]byte(got), &c)
+		got = w.Body.String()
+		created := category.Category{}
+		err = json.Unmarshal([]byte(got), &created)
 		if err != nil {
 			t.Fatalf("\t [ERROR] Should be created a Category entity: %v", err)
 		}
 		t.Log("\t [SUCCESS] Should be created a Category entity.")
 
-		id := c.ID
+		id := created.ID
 		r2 := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/v1/categories/%v", id), nil)
 		w2 := httptest.NewRecorder()
 
@@ -240,8 +241,48 @@ func (ct *CategoryTests) category200Flow(t *testing.T) {
 		if w2.Code != http.StatusOK {
 			t.Fatalf("\t [ERROR] Should receive a status code of 200 for the response: %v", w2.Code)
 		}
-		t.Log("\t [SUCCESS] Should receive a status code of 200")
+		t.Log("\t [SUCCESS] Should receive a status code of 200 for the response.")
 
+		got = w2.Body.String()
+		saved := category.Category{}
+		err = json.Unmarshal([]byte(got), &saved)
+
+		if err != nil {
+			t.Fatalf("\t [ERROR] Should retrieved category: %v", err)
+		}
+		t.Log("\t [SUCCESS] Should retrieved category.")
+
+		r3 := httptest.NewRequest(http.MethodGet, "/v1/categories", nil)
+		w3 := httptest.NewRecorder()
+
+		ct.app.ServeHTTP(w3, r3)
+
+		if w3.Code != http.StatusOK {
+			t.Fatalf("\t [ERROR] Should receive a status code of 200 for the response: %v", w3.Code)
+		}
+		t.Log("\t [SUCCESS] Should receive a status code of 200 for the response.")
+
+		got = w3.Body.String()
+		listed := []category.Category{}
+		err = json.Unmarshal([]byte(got), &listed)
+		clisted := listed[0]
+
+		if err == nil {
+			t.Fatalf("\t [ERROR] Should retrieved categories: %v", err)
+		}
+		t.Log("\t [SUCCESS] Should retrieved categories.")
+
+
+		created.CreatedAt = time.Time{}
+		saved.CreatedAt = time.Time{}
+		clisted.CreatedAt = time.Time{}
+		diffcs := cmp.Diff(created, saved)
+		diffcl := cmp.Diff(created, clisted)
+
+		if (diffcs != "") && (diffcl != "") {
+				t.Fatalf("\t [ERROR] Should get back the same category : %s", diffcs)
+				t.Fatalf("\t [ERROR] Should get back the same category : %s", diffcl)
+			}
+		t.Logf("\t [SUCCESS] Should get back the same category.")
 	}
-
 }

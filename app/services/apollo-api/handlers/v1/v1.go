@@ -5,7 +5,7 @@ package v1
 import (
 	"net/http"
 
-	"github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers/v1/categorygrp"
+	"github.com/chagasVinicius/apollo/app/services/apollo-api/handlers/v1/categorygrp"
 	"github.com/chagasVinicius/apollo/internal/core/category"
 	"github.com/chagasVinicius/apollo/internal/core/category/stores/categorydb"
 	"github.com/chagasVinicius/apollo/kit/web"
