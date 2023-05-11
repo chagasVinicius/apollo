@@ -2,6 +2,7 @@ package mid
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/chagasVinicius/apollo/internal/sys/validate"
@@ -25,6 +26,7 @@ func Errors(log *zap.SugaredLogger) web.Middleware {
 
 				var er v1Web.ErrorResponse
 				var status int
+				fmt.Println(err)
 				switch {
 				case validate.IsFieldErrors(err):
 					fieldErrors := validate.GetFieldErrors(err)

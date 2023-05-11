@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/chagasVinicius/apollo/internal/sys/database"
-
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 )

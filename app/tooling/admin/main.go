@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/ardanlabs/conf/v3"
-	"github.com/chagasVinicius/apollo/cmd/tooling/admin/commands"
+	"github.com/chagasVinicius/apollo/app/tooling/admin/commands"
 	"github.com/chagasVinicius/apollo/internal/sys/database"
 	"go.uber.org/zap"
 )
@@ -42,7 +42,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "APOLLO"
+	const prefix = "apollo-api"
 
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {

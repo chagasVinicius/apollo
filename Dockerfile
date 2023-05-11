@@ -8,11 +8,11 @@ COPY . /service
 
 # Build the service binary. We are doing this last since this will be different
 # every time we run through this process.
-WORKDIR /service/cmd/services/apollo-api
+WORKDIR /service/app/services/apollo-api
 RUN go build -ldflags "-X main.build=${BUILD_REF}"
 
 # Build the admin binary.
-WORKDIR /service/cmd/tooling/admin
+WORKDIR /service/app/tooling/admin
 RUN go build -ldflags "-X main.build=${BUILD_REF}"
 
 
@@ -22,8 +22,8 @@ ARG BUILD_DATE
 ARG BUILD_REF
 RUN addgroup -g 1000 -S appuser && \
     adduser -u 1000 -h /service -G appuser -S appuser
-COPY --from=build_apollo-api --chown=appuser:appuser /service/cmd/services/apollo-api/apollo-api /service/apollo-api
-COPY --from=build_apollo-api --chown=appuser:appuser /service/cmd/tooling/admin/admin /service/admin
+COPY --from=build_apollo-api --chown=appuser:appuser /service/app/services/apollo-api/apollo-api /service/apollo-api
+COPY --from=build_apollo-api --chown=appuser:appuser /service/app/tooling/admin/admin /service/admin
 
 WORKDIR /service
 USER appuser

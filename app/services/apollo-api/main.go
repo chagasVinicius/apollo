@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
-	"github.com/chagasVinicius/apollo/cmd/services/apollo-api/handlers"
+	"github.com/chagasVinicius/apollo/app/services/apollo-api/handlers"
 	"github.com/chagasVinicius/apollo/internal/sys/database"
 	"github.com/chagasVinicius/apollo/internal/web/debug"
 	"github.com/chagasVinicius/apollo/kit/logger"
@@ -81,7 +81,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "APOLLO"
+	const prefix = "apollo-api"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
@@ -115,7 +115,6 @@ func run(log *zap.SugaredLogger) error {
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
 	})
-
 	if err != nil {
 		return fmt.Errorf("connecting to db: %w", err)
 	}
