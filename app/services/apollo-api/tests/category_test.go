@@ -267,11 +267,10 @@ func (ct *CategoryTests) category200Flow(t *testing.T) {
 		err = json.Unmarshal([]byte(got), &listed)
 		clisted := listed[0]
 
-		if err == nil {
+		if err != nil {
 			t.Fatalf("\t [ERROR] Should retrieved categories: %v", err)
 		}
 		t.Log("\t [SUCCESS] Should retrieved categories.")
-
 
 		created.CreatedAt = time.Time{}
 		saved.CreatedAt = time.Time{}
@@ -279,10 +278,14 @@ func (ct *CategoryTests) category200Flow(t *testing.T) {
 		diffcs := cmp.Diff(created, saved)
 		diffcl := cmp.Diff(created, clisted)
 
-		if (diffcs != "") && (diffcl != "") {
-				t.Fatalf("\t [ERROR] Should get back the same category : %s", diffcs)
-				t.Fatalf("\t [ERROR] Should get back the same category : %s", diffcl)
-			}
+		if diffcs != "" {
+			t.Fatalf("\t [ERROR] Should get back the same category : %s", diffcs)
+		}
+
+		if diffcl != "" {
+			t.Fatalf("\t [ERROR] Should listed get back the same category : %s", diffcl)
+		}
+
 		t.Logf("\t [SUCCESS] Should get back the same category.")
 	}
 }
