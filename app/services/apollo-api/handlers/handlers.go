@@ -9,6 +9,7 @@ import (
 	"github.com/chagasVinicius/apollo/internal/web/v1/mid"
 	"github.com/chagasVinicius/apollo/kit/web"
 	"github.com/uptrace/bun"
+	"github.com/zmb3/spotify/v2"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
@@ -19,6 +20,7 @@ type APIMuxConfig struct {
 	Log      *zap.SugaredLogger
 	DB       *bun.DB
 	Tracer   trace.Tracer
+	SongClient *spotify.Client
 }
 
 // APIMux constructs a http.Handler with all application routes defined.
@@ -36,6 +38,7 @@ func APIMux(cfg APIMuxConfig) http.Handler {
 	v1.Routes(app, v1.Config{
 		Log: cfg.Log,
 		DB:  cfg.DB,
+		SongClient: cfg.SongClient,
 	})
 
 	return app

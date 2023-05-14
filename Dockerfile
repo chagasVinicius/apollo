@@ -3,6 +3,7 @@ FROM golang:1.20 as build_apollo-api
 ENV CGO_ENABLED 0
 ARG BUILD_REF
 
+
 # Copy the source code into the container.
 COPY . /service
 

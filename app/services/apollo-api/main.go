@@ -17,8 +17,11 @@ import (
 	"github.com/chagasVinicius/apollo/internal/web/debug"
 	"github.com/chagasVinicius/apollo/kit/logger"
 	"github.com/chagasVinicius/apollo/kit/opentel"
+	"github.com/zmb3/spotify/v2"
+	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"go.uber.org/automaxprocs/maxprocs"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 var build = "develop"
@@ -74,6 +77,11 @@ func run(log *zap.SugaredLogger) error {
 			ServiceName string  `conf:"default:apollo-api"`
 			Probability float64 `conf:"default:0.05"`
 		}
+
+		Spotify struct {
+			ClientID	string	`conf:"default:S_ID"`
+			ClientSecret	string	`conf:"default:S_SECRET"`
+		}
 	}{
 		Version: conf.Version{
 			Build: build,
@@ -81,7 +89,7 @@ func run(log *zap.SugaredLogger) error {
 		},
 	}
 
-	const prefix = "apollo-api"
+	const prefix = "APOLLO"
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
@@ -136,6 +144,33 @@ func run(log *zap.SugaredLogger) error {
 
 	tracer := traceProvider.Tracer("service")
 
+
+
+	// =========================================================================
+	// Spotify Support
+
+	log.Infow("startup", "status", "initializing spotify client")
+
+	config := &clientcredentials.Config{
+		ClientID: cfg.Spotify.ClientID,
+		ClientSecret: cfg.Spotify.ClientSecret,
+		TokenURL: spotifyauth.TokenURL,
+	}
+	ctx := context.Background()
+
+	token, err := config.Token(ctx)
+	httpClient := spotifyauth.New().Client(ctx, token)
+
+	songClient :=spotify.New(httpClient)
+
+	if err != nil {
+		return fmt.Errorf("connecting to spotify: %w", err)
+	}
+	defer func() {
+		log.Infow("shutdown", "status", "stopping spotify client")
+		httpClient.CloseIdleConnections()
+	}()
+
 	// =========================================================================
 	// Start Debug Service
 
@@ -161,6 +196,7 @@ func run(log *zap.SugaredLogger) error {
 		Log:      log,
 		DB:       db,
 		Tracer:   tracer,
+		SongClient: songClient,
 	})
 
 	api := http.Server{

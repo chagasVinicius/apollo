@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/chagasVinicius/apollo/internal/core/category"
+	"github.com/chagasVinicius/apollo/internal/core/song"
 	v1Web "github.com/chagasVinicius/apollo/internal/web/v1"
 	"github.com/chagasVinicius/apollo/kit/web"
 )
@@ -21,6 +22,7 @@ const (
 // Handlers manages the set of category endpoints.
 type Handlers struct {
 	Category category.Core
+	Song     song.Core
 }
 
 // Create adds a new category to the system.
@@ -35,6 +37,9 @@ func (h Handlers) Create(ctx context.Context, w http.ResponseWriter, r *http.Req
 	if err != nil {
 		return fmt.Errorf("creating new category, nc[%+v]: %w", nc, err)
 	}
+
+	// Should trigger songs job
+	h.Song.SearchPlaylists(ctx, c.ID, c.Name)
 
 	return web.Respond(ctx, w, c, http.StatusCreated)
 }
